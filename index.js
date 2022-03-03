@@ -18,8 +18,10 @@ const db = mysql.createConnection(
     console.log('Connected to the business database.')
 );
 
+// Runs questions method
 function questions(){
     inquirer
+        // Asks user that they would like to do
         .prompt({
             type: 'list',
             name: 'start',
@@ -27,47 +29,62 @@ function questions(){
             choices: ['View All Departments', 'Add Department','Quit']
         })
         .then(({ start }) => {
-            //takes name and saves it to new employee class
-            if (start === 'View All Departments'){
-                db.query(`SELECT * FROM department`, (err, rows) => {
-                    console.table(rows);
-                    questions();
-                });
-            } else if (start === 'Add Department'){
-                inquirer
-                    .prompt({
-                        type: 'input',
-                        name: 'newDepartment',
-                        message: 'What is the name of the department?',
-                        validate: linkInput => {
-                            if (linkInput) {
-                                return true;
-                            } else {
-                                console.log('You need to enter a department name!');
-                            return false;
+            switch (start){
+                // View All Departments case
+                case 'View All Departments':
+                    db.query(`SELECT * FROM department`, (err, rows) => {
+                        //console logs rows
+                        console.table(rows);
+                        // calls questions
+                        questions();
+                    });
+                    break;
+                // Add Department case
+                case 'Add Department':
+                    inquirer
+                    // Asks user for name of department
+                        .prompt({
+                            type: 'input',
+                            name: 'newDepartment',
+                            message: 'What is the name of the department?',
+                            validate: linkInput => {
+                                if (linkInput) {
+                                    return true;
+                                } else {
+                                    console.log('You need to enter a department name!');
+                                    return false;
+                                }   
                             }
-                        }
-                    })
-                    .then(({ newDepartment }) => {
-                        // Create a candidate
-                        const sql = `INSERT INTO department (name) 
-                                    VALUES (?)`;
-                        const params = newDepartment;
-                        db.query(sql, params, (err, result) => {
-                            if (err) {
-                                console.log(err);
-                            }
-                            console.log(`Added ${params} to the database.`)
-                            questions();
-                        });
-                    })
-            } else {
-                db.end();
+                        })
+                        // Inserts new candidate name into value params
+                        .then(({ newDepartment }) => {
+                            // Create a candidate
+                            const sql = `INSERT INTO department (name) 
+                                        VALUES (?)`;
+                            const params = newDepartment;
+                            db.query(sql, params, (err, result) => {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                // Tells user that new department name is in the database 
+                                console.log(`Added ${params} to the database.`)
+                                // Calls questions method
+                                questions();
+                            });
+                        })
+                    break;
+                // Quit case    
+                case 'Quit':
+                    // Ends database connection
+                    db.end();
+                    break;
             }
-    })
-    .catch(err => {
-        console.log(err);
-    });
-}
 
+        })
+        // catches error
+        .catch(err => {
+            console.log(err);
+        });
+}
+// Calls function method
 questions();
