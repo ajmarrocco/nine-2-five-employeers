@@ -11,7 +11,7 @@ const table = require('console.table');
 //     });
 // }
 
-// function questions(){
+
 // Connect to database
 const db = mysql.createConnection(
     {
@@ -25,26 +25,35 @@ const db = mysql.createConnection(
     console.log('Connected to the business database.')
 );
 
+function questions(){
 inquirer
     .prompt({
         type: 'list',
         name: 'start',
         message: 'What would you like to do?',
-        choices: ['View All Departments', 'Add Department']
+        choices: ['View All Departments', 'Add Department','Quit']
     })
     .then(({ start }) => {
         //takes name and saves it to new employee class
         if (start === 'View All Departments'){
             db.query(`SELECT * FROM department`, (err, rows) => {
                 console.table(rows);
-                db.end();
+                questions();
             });
-        } else {
+        } else if (start === 'Add Department'){
             inquirer
                 .prompt({
                     type: 'input',
                     name: 'newDepartment',
                     message: 'What is the name of the department?',
+                    validate: linkInput => {
+                        if (linkInput) {
+                            return true;
+                        } else {
+                            console.log('You need to enter a department name!');
+                        return false;
+                        }
+                    }
                 })
                 .then(({ newDepartment }) => {
                     // Create a candidate
@@ -55,12 +64,12 @@ inquirer
                         if (err) {
                             console.log(err);
                         }
-                        db.query(`SELECT * FROM department`, (err, rows) => {
-                            console.table(rows);
-                            db.end();
-                        });
+                        console.log(`Added ${params} to the database.`)
+                        questions();
                     });
                 })
+        } else {
+            db.end();
         }
     })
     // .then(writeToFile =>{
@@ -69,7 +78,6 @@ inquirer
     .catch(err => {
         console.log(err);
     });
-// }
+}
 
-// return;
-// questions();
+questions();
