@@ -4,12 +4,12 @@ const mysql = require('mysql2');
 const table = require('console.table');
 
 
-function writeToFile(blank) {
-    return new Promise((resolve, reject) => {
-            // if everything went well, resolve the Promise and send the successful data to the `.then()` method
-            resolve('Success');
-    });
-}
+// function writeToFile(blank) {
+//     return new Promise((resolve, reject) => {
+//             // if everything went well, resolve the Promise and send the successful data to the `.then()` method
+//             resolve('Success');
+//     });
+// }
 
 // function questions(){
 // Connect to database
@@ -37,7 +37,7 @@ inquirer
         if (start === 'View All Departments'){
             db.query(`SELECT * FROM department`, (err, rows) => {
                 console.table(rows);
-                return writeToFile(rows);
+                db.end();
             });
         } else {
             inquirer
@@ -57,15 +57,15 @@ inquirer
                         }
                         db.query(`SELECT * FROM department`, (err, rows) => {
                             console.table(rows);
-                            return writeToFile(rows);
+                            db.end();
                         });
                     });
                 })
         }
     })
-    .then(writeToFile =>{
-        console.log(writeToFile);
-    })
+    // .then(writeToFile =>{
+    //     console.log(writeToFile);
+    // })
     .catch(err => {
         console.log(err);
     });
