@@ -18,12 +18,26 @@ const db = mysql.createConnection(
     console.log('Connected to the business database.')
 );
 
+// Displays welcome message
 console.log(`
 Welcome to employee tracker
 `)
 
+// Creates departments array
+var departmentArr = [];
+// function addDepartments() {
+db.query(`SELECT department.name FROM department`, (err, rows) => {
+    for(let i=0;i<rows.length;i++){
+        departmentArr.push(rows[i].name);
+    }
+    return departmentArr;
+});
+// }
+
+
 // Runs questions method
 function questions(){
+
     inquirer
         // Asks user that they would like to do
         .prompt({
@@ -73,6 +87,7 @@ function questions(){
                                 // Tells user that new department name is in the database 
                                 console.log(`Added ${params} to the database.`)
                                 // Calls questions method
+                                departmentArr.push(params);
                                 questions();
                             });
                         })
@@ -112,15 +127,16 @@ function questions(){
                                 type: 'list',
                                 name: 'department',
                                 message: 'Which department does the role belong to?',
-                                choices: [1, 2, 3, 4]
+                                choices: departmentArr
                             }
                         ])
                         // Inserts new candidate name into value params
                         .then(({ newRole, salary, department }) => {
+                            departId = departmentArr.indexOf(department) + 1;
                             // Create a candidate
                             const sql = `INSERT INTO role (title, salary, department_id) 
                                         VALUES (?,?,?)`;
-                            const params = [newRole, salary, department];
+                            const params = [newRole, salary, departId];
                             db.query(sql, params, (err, result) => {
                                 if (err) {
                                     console.log(err);
