@@ -26,7 +26,7 @@ function questions(){
             type: 'list',
             name: 'start',
             message: 'What would you like to do?',
-            choices: ['View All Departments', 'Add Department','View All Roles','Quit']
+            choices: ['View All Departments', 'Add Department','View All Roles','Add a Role','Quit']
         })
         .then(({ start }) => {
             switch (start){
@@ -47,8 +47,8 @@ function questions(){
                             type: 'input',
                             name: 'newDepartment',
                             message: 'What is the name of the department?',
-                            validate: linkInput => {
-                                if (linkInput) {
+                            validate: newDepartmentInput => {
+                                if (newDepartmentInput) {
                                     return true;
                                 } else {
                                     console.log('You need to enter a department name!');
@@ -81,6 +81,52 @@ function questions(){
                         // calls questions
                         questions();
                     });
+                    break;
+                case 'Add a Role':
+                    inquirer
+                    // Asks user for name of department
+                        .prompt([
+                            {
+                                type: 'input',
+                                name: 'newRole',
+                                message: 'What is the name of the role?',
+                                validate: newRoleInput => {
+                                    if (newRoleInput) {
+                                        return true;
+                                    } else {
+                                        console.log('You need to enter a role!');
+                                        return false;
+                                    }   
+                                }
+                            },
+                            {
+                                type: 'number',
+                                name: 'salary',
+                                message: 'What is the salary of the role?',
+                            },
+                            {   
+                                type: 'list',
+                                name: 'department',
+                                message: 'Which department does the role belong to?',
+                                choices: [1, 2, 3, 4]
+                            }
+                        ])
+                        // Inserts new candidate name into value params
+                        .then(({ newRole, salary, department }) => {
+                            // Create a candidate
+                            const sql = `INSERT INTO role (title, salary, department_id) 
+                                        VALUES (?,?,?)`;
+                            const params = [newRole, salary, department];
+                            db.query(sql, params, (err, result) => {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                // Tells user that new department name is in the database 
+                                console.log(`Added ${params[0]} to the database.`)
+                                // Calls questions method
+                                questions();
+                            });
+                        })
                     break;
                 // Quit case    
                 case 'Quit':
