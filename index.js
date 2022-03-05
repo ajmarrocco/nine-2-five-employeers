@@ -74,7 +74,7 @@ function questions(){
                         })
                     break;
                 case 'View All Roles':
-                    db.query(`SELECT role.*, department.name AS department FROM role
+                    db.query(`SELECT role.id, role.title, department.name AS department, role.salary FROM role
                             LEFT JOIN department ON role.department_id = department.id;`, (err, rows) => {
                         //console logs rows
                         console.table(rows);
