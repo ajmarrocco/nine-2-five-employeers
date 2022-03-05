@@ -25,15 +25,15 @@ Welcome to employee tracker
 
 // Creates departments array
 var departmentArr = [];
-// function addDepartments() {
+
+// creates department names as an array
 db.query(`SELECT department.name FROM department`, (err, rows) => {
     for(let i=0;i<rows.length;i++){
         departmentArr.push(rows[i].name);
     }
+    // returns array
     return departmentArr;
 });
-// }
-
 
 // Runs questions method
 function questions(){
@@ -74,9 +74,9 @@ function questions(){
                                 }   
                             }
                         })
-                        // Inserts new candidate name into value params
+                        // Inserts new department name into value params
                         .then(({ newDepartment }) => {
-                            // Create a candidate
+                            // Create a department
                             const sql = `INSERT INTO department (name) 
                                         VALUES (?)`;
                             const params = newDepartment;
@@ -93,6 +93,7 @@ function questions(){
                         })
                     break;
                 case 'View All Roles':
+                    // View All Roles case
                     db.query(`SELECT role.id, role.title, department.name AS department, role.salary FROM role
                             LEFT JOIN department ON role.department_id = department.id;`, (err, rows) => {
                         //console logs rows
@@ -102,6 +103,7 @@ function questions(){
                     });
                     break;
                 case 'Add a Role':
+                    // Add role case
                     inquirer
                     // Asks user for name of department
                         .prompt([
@@ -130,10 +132,11 @@ function questions(){
                                 choices: departmentArr
                             }
                         ])
-                        // Inserts new candidate name into value params
+                        // Inserts new role name into value params
                         .then(({ newRole, salary, department }) => {
+                            // gets index of the department from the department array
                             departId = departmentArr.indexOf(department) + 1;
-                            // Create a candidate
+                            // Create a  role
                             const sql = `INSERT INTO role (title, salary, department_id) 
                                         VALUES (?,?,?)`;
                             const params = [newRole, salary, departId];
@@ -141,7 +144,7 @@ function questions(){
                                 if (err) {
                                     console.log(err);
                                 }
-                                // Tells user that new department name is in the database 
+                                // Tells user that new role name is in the database 
                                 console.log(`Added ${params[0]} to the database.`)
                                 // Calls questions method
                                 questions();
