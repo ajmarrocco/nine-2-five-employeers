@@ -26,7 +26,7 @@ function questions(){
             type: 'list',
             name: 'start',
             message: 'What would you like to do?',
-            choices: ['View All Departments', 'Add Department','Quit']
+            choices: ['View All Departments', 'Add Department','View All Roles','Quit']
         })
         .then(({ start }) => {
             switch (start){
@@ -72,6 +72,15 @@ function questions(){
                                 questions();
                             });
                         })
+                    break;
+                case 'View All Roles':
+                    db.query(`SELECT role.*, department.name AS department FROM role
+                            LEFT JOIN department ON role.department_id = department.id;`, (err, rows) => {
+                        //console logs rows
+                        console.table(rows);
+                        // calls questions
+                        questions();
+                    });
                     break;
                 // Quit case    
                 case 'Quit':
