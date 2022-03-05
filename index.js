@@ -44,7 +44,7 @@ function questions(){
             type: 'list',
             name: 'start',
             message: 'What would you like to do?',
-            choices: ['View All Departments', 'Add Department','View All Roles','Add a Role','Quit']
+            choices: ['View All Departments', 'Add Department','View All Roles','Add a Role','View All Employees','Quit']
         })
         .then(({ start }) => {
             switch (start){
@@ -150,6 +150,21 @@ function questions(){
                                 questions();
                             });
                         })
+                    break;
+                 // View All Roles case
+                case 'View All Employees':
+                    db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title AS title, department.name AS department, role.salary AS salary, CONCAT (manager.first_name, ' ', manager.last_name) as manager
+                            FROM employee 
+                            LEFT JOIN role ON employee.role_id = role.id
+                            LEFT JOIN department ON role.department_id = department.id
+                            LEFT JOIN employee manager on manager.id = employee.manager_id;
+                            `
+                            , (err, rows) => {
+                        //console logs rows
+                        console.table(rows);
+                        // calls questions
+                        questions();
+                    });
                     break;
                 // Quit case    
                 case 'Quit':
