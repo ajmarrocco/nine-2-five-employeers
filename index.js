@@ -23,8 +23,9 @@ console.log(`
 Welcome to employee tracker
 `)
 
-// Creates departments array
+// Creates array
 var departmentArr = [];
+var roleArr = [];
 
 // creates department names as an array
 db.query(`SELECT department.name FROM department`, (err, rows) => {
@@ -33,6 +34,28 @@ db.query(`SELECT department.name FROM department`, (err, rows) => {
     }
     // returns array
     return departmentArr;
+});
+
+// creates department names as an array
+db.query(`SELECT role.title FROM role`, (err, rows) => {
+    for(let i=0;i<rows.length;i++){
+        roleArr.push(rows[i].title);
+    }
+    // returns array
+    return roleArr;
+});
+
+// Creates departments array
+var managerArr = ['None'];
+
+// creates department names as an array
+db.query(`SELECT CONCAT (employee.first_name, ' ', employee.last_name) FROM employee WHERE manager_id = NULL`, (err, rows) => {
+    for(let i=0;i<rows.length;i++){
+        managerArr.push(rows[i].name);
+    }
+    finalManagerArr = managerArr.filter(manager => manager != 'null')
+    // returns array
+    return finalManagerArr;
 });
 
 // Runs questions method
@@ -44,7 +67,7 @@ function questions(){
             type: 'list',
             name: 'start',
             message: 'What would you like to do?',
-            choices: ['View All Departments', 'Add Department','View All Roles','Add a Role','View All Employees','Quit']
+            choices: ['View All Departments', 'Add Department','View All Roles','Add a Role','View All Employees','Add an Employee','Quit']
         })
         .then(({ start }) => {
             switch (start){
@@ -92,8 +115,8 @@ function questions(){
                             });
                         })
                     break;
-                case 'View All Roles':
-                    // View All Roles case
+                // View All Roles case
+                case 'View All Roles': 
                     db.query(`SELECT role.id, role.title, department.name AS department, role.salary FROM role
                             LEFT JOIN department ON role.department_id = department.id;`, (err, rows) => {
                         //console logs rows
@@ -102,8 +125,8 @@ function questions(){
                         questions();
                     });
                     break;
+                // Add role case 
                 case 'Add a Role':
-                    // Add role case
                     inquirer
                     // Asks user for name of department
                         .prompt([
@@ -146,6 +169,8 @@ function questions(){
                                 }
                                 // Tells user that new role name is in the database 
                                 console.log(`Added ${params[0]} to the database.`)
+                                // Push new role to role array
+                                roleArr.push(params[0]);
                                 // Calls questions method
                                 questions();
                             });
@@ -165,6 +190,70 @@ function questions(){
                         // calls questions
                         questions();
                     });
+                    break;
+                // Add role case
+                case 'Add an Employee':
+                    inquirer
+                    // Asks user for name of department
+                        .prompt([
+                            {
+                                type: 'input',
+                                name: 'firstName',
+                                message: "What is the employee's first name?",
+                                validate: firstNameInput => {
+                                    if (firstNameInput) {
+                                        return true;
+                                    } else {
+                                        console.log('You need to enter a first name!');
+                                        return false;
+                                    }   
+                                }
+                            },
+                            {
+                                type: 'input',
+                                name: 'lastName',
+                                message: "What is the employee's last name?",
+                                validate: lastNameInput => {
+                                    if (lastNameInput) {
+                                        return true;
+                                    } else {
+                                        console.log('You need to enter a last name!');
+                                        return false;
+                                    }   
+                                }
+                            },
+                            {   
+                                type: 'list',
+                                name: 'role',
+                                message: "What is the employee's role?",
+                                choices: roleArr
+                            },
+                            {   
+                                type: 'list',
+                                name: 'manager',
+                                message: "What is the employee's manager?",
+                                choices: managerArr
+                            }
+                        ])
+                        // Inserts new role name into value params
+                        .then(({ firstName, lastName, role, manager }) => {
+                            // gets index of the department from the department array
+                            roleId = roleArr.indexOf(role) + 1;
+                            managerId = managerArr.indexOf(manager) + 2;
+                            // Create a  role
+                            const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                                        VALUES (?,?,?,?)`;
+                            const params = [firstName, lastName, roleId, managerId];
+                            db.query(sql, params, (err, result) => {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                // Tells user that new role name is in the database 
+                                console.log(`Added ${params[0]} ${params[1]} to the database.`)
+                                // Calls questions method
+                                questions();
+                            });
+                        })
                     break;
                 // Quit case    
                 case 'Quit':
