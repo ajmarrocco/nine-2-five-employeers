@@ -51,23 +51,23 @@ db.query(`SELECT role.title FROM role`, (err, rows) => {
 var managerArr = ['None'];
 var managerObject = [
     {
-        "id_number" : '0',
+        "id_number" : 0,
         "manager_name" : 'None'
     },    
     {
-        "id_number" : '1',
+        "id_number" : 1,
         "manager_name" : 'Gary Petros'
     },   
     {
-        "id_number" : '3',
+        "id_number" : 3,
         "manager_name" : 'Jourdyn Guimaraes'
     },
     {
-        "id_number" : '5',
+        "id_number" : 5,
         "manager_name" : 'Topher Paltoo'
     },
     {
-        "id_number" : '10',
+        "id_number" : 10,
         "manager_name" : 'Brian Latchman'
     },
 ]
@@ -278,16 +278,20 @@ function questions(){
                                 if (err) {
                                     console.log(err);
                                 }
-                                console.log(result);
-                                // let newManager = {
-                                //     "id_number": result.insertId,
-                                //     "manager_name": manager
-                                // }
-                                // managerObject.push(newManager);
+                                // console.log(result);
+                                if (manager === 'None'){
+                                    let newManager = {
+                                        "id_number": result.insertId,
+                                        "manager_name": `${firstName} ${lastName}`
+                                    }
+                                    managerObject.push(newManager);
+                                    console.log(managerObject);
+                                }
                                 // Tells user that new role name is in the database 
                                 console.log(`Added ${params[0]} ${params[1]} to the database.`)
-                                managerArr.push(`${params[0]} ${params[1]}`);
+                                // managerArr.push(`${params[0]} ${params[1]}`);
                                 // Calls questions method
+                                console.log(managerObject);
                                 questions();
                             });
                         })
