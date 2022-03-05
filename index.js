@@ -23,7 +23,7 @@ console.log(`
 Welcome to employee tracker
 `)
 
-// Creates array
+// Creates empty arrays
 var departmentArr = [];
 var roleArr = [];
 var employeeArr = [];
@@ -37,7 +37,7 @@ db.query(`SELECT department.name FROM department`, (err, rows) => {
     return departmentArr;
 });
 
-// creates department names as an array
+// creates role names as an array
 db.query(`SELECT role.title FROM role`, (err, rows) => {
     for(let i=0;i<rows.length;i++){
         roleArr.push(rows[i].title);
@@ -46,7 +46,7 @@ db.query(`SELECT role.title FROM role`, (err, rows) => {
     return roleArr;
 });
 
-// creates manager names as an array
+// creates employee names as an array
 db.query(`SELECT CONCAT(employee.first_name,' ',employee.last_name) AS employee FROM employee`, (err, rows) => {
     for(let i=0;i<rows.length;i++){
         employeeArr.push(rows[i].employee);
@@ -128,11 +128,11 @@ function questions(){
                                 }   
                             }
                         })
-                        // Inserts new department name into value params
+                        // Create a department
                         .then(({ newDepartment }) => {
-                            // Create a department
                             const sql = `INSERT INTO department (name) 
                                         VALUES (?)`;
+                            // Inserts new department name into value params
                             const params = newDepartment;
                             db.query(sql, params, (err, result) => {
                                 if (err) {
@@ -159,7 +159,7 @@ function questions(){
                 // Add role case 
                 case 'Add a Role':
                     inquirer
-                    // Asks user for role questions
+                        // Asks user for role questions
                         .prompt([
                             {
                                 type: 'input',
@@ -190,7 +190,7 @@ function questions(){
                         .then(({ newRole, salary, department }) => {
                             // gets index of the department from the department array
                             departId = departmentArr.indexOf(department) + 1;
-                            // Create a  role
+                            // Create a role
                             const sql = `INSERT INTO role (title, salary, department_id) 
                                         VALUES (?,?,?)`;
                             const params = [newRole, salary, departId];
@@ -281,7 +281,7 @@ function questions(){
                                 // turn ID into an integer
                                 managerId = parseInt(unparsedManagerId)
                             }
-                            // Create a employee
+                            // Create an employee
                             const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
                                         VALUES (?,?,?,?)`;
                             const params = [firstName, lastName, roleId, managerId];
@@ -308,7 +308,7 @@ function questions(){
                 // Update Employee Role case
                 case 'Update Employee Role':
                     inquirer
-                    // Asks user for name of department
+                    // Asks user for employee and role then want to change
                         .prompt([
                             {   
                                 type: 'list',
