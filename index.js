@@ -45,9 +45,7 @@ db.query(`SELECT role.title FROM role`, (err, rows) => {
     return roleArr;
 });
 
-// Creates departments array
-// var isManagerArr = [NULL,1,NULL,3,NULL,1,5,5,1,NULL,10];
-// var managerArr = ['None', 'Gary Petros','Jourdyn Guimaraes','Topher Paltoo','Brian Latchman'];
+// Creates manager array and obect
 var managerArr = ['None'];
 var managerObject = [
     {
@@ -72,7 +70,7 @@ var managerObject = [
     },
 ]
 
-// creates department names as an array
+// creates manager names as an array
 db.query(`SELECT CONCAT(employee.first_name,' ',employee.last_name) AS manager FROM employee WHERE manager_id IS NULL`, (err, rows) => {
     for(let i=0;i<rows.length;i++){
         managerArr.push(rows[i].manager);
@@ -151,7 +149,7 @@ function questions(){
                 // Add role case 
                 case 'Add a Role':
                     inquirer
-                    // Asks user for name of department
+                    // Asks user for role questions
                         .prompt([
                             {
                                 type: 'input',
@@ -214,10 +212,10 @@ function questions(){
                         questions();
                     });
                     break;
-                // Add role case
+                // Add Employe case
                 case 'Add an Employee':
                     inquirer
-                    // Asks user for name of department
+                    // Asks user for employee questions
                         .prompt([
                             {
                                 type: 'input',
@@ -262,12 +260,15 @@ function questions(){
                         .then(({ firstName, lastName, role, manager }) => {
                             // gets index of the department from the department array
                             roleId = roleArr.indexOf(role) + 1;
+                            // No manager then id is null and push manager name into array 
                             if (manager === 'None'){
                                 managerId = null;
                                 managerArr.push(`${firstName} ${lastName}`);
                             } else {
+                                // if there is a manager then get manager ID number from manager object
                                 let mangId = managerObject.find(mangId => mangId.manager_name === manager)
                                 unparsedManagerId = mangId.id_number;
+                                // turn ID into an integer
                                 managerId = parseInt(unparsedManagerId)
                             }
                             // Create a employee
@@ -278,7 +279,7 @@ function questions(){
                                 if (err) {
                                     console.log(err);
                                 }
-                                // console.log(result);
+                                // If there in no manager than add to list of managers so it can be a manager
                                 if (manager === 'None'){
                                     let newManager = {
                                         "id_number": result.insertId,
@@ -289,9 +290,7 @@ function questions(){
                                 }
                                 // Tells user that new role name is in the database 
                                 console.log(`Added ${params[0]} ${params[1]} to the database.`)
-                                // managerArr.push(`${params[0]} ${params[1]}`);
                                 // Calls questions method
-                                console.log(managerObject);
                                 questions();
                             });
                         })
