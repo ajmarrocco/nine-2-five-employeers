@@ -18,6 +18,10 @@ const db = mysql.createConnection(
     console.log('Connected to the business database.')
 );
 
+console.log(`
+Welcome to employee tracker
+`)
+
 // Runs questions method
 function questions(){
     inquirer
