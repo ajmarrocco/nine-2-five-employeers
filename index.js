@@ -26,6 +26,7 @@ Welcome to employee tracker
 // Creates array
 var departmentArr = [];
 var roleArr = [];
+var employeeArr = [];
 
 // creates department names as an array
 db.query(`SELECT department.name FROM department`, (err, rows) => {
@@ -43,6 +44,15 @@ db.query(`SELECT role.title FROM role`, (err, rows) => {
     }
     // returns array
     return roleArr;
+});
+
+// creates manager names as an array
+db.query(`SELECT CONCAT(employee.first_name,' ',employee.last_name) AS employee FROM employee`, (err, rows) => {
+    for(let i=0;i<rows.length;i++){
+        employeeArr.push(rows[i].employee);
+    }
+    // returns array
+    return employeeArr;
 });
 
 // Creates manager array and obect
@@ -88,7 +98,7 @@ function questions(){
             type: 'list',
             name: 'start',
             message: 'What would you like to do?',
-            choices: ['View All Departments', 'Add Department','View All Roles','Add a Role','View All Employees','Add an Employee','Quit']
+            choices: ['View All Departments', 'Add Department','View All Roles','Add a Role','View All Employees','Add an Employee','Update Employee Role','Quit']
         })
         .then(({ start }) => {
             switch (start){
@@ -290,6 +300,43 @@ function questions(){
                                 }
                                 // Tells user that new role name is in the database 
                                 console.log(`Added ${params[0]} ${params[1]} to the database.`)
+                                // Calls questions method
+                                questions();
+                            });
+                        })
+                    break;
+                // Update Employee Role case
+                case 'Update Employee Role':
+                    inquirer
+                    // Asks user for name of department
+                        .prompt([
+                            {   
+                                type: 'list',
+                                name: 'employee',
+                                message: "Which employee's role do you want to update?",
+                                choices: employeeArr
+                            },
+                            {   
+                                type: 'list',
+                                name: 'role',
+                                message: "Which role do you want to assign the selected employee?",
+                                choices: roleArr
+                            }
+                        ])
+                        // Inserts new department name into value params
+                        .then(({ employee , role }) => {
+                            // gets index of the department from the department array
+                            employeeId = employeeArr.indexOf(employee) + 1;
+                            roleId = roleArr.indexOf(role) + 1;
+                            // Create a department
+                            const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+                            const params = [roleId,employeeId];
+                            db.query(sql, params, (err, result) => {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                // Tells user that updated employee role
+                                console.log("Updated Employees role")
                                 // Calls questions method
                                 questions();
                             });
