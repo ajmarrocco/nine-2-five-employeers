@@ -15,7 +15,7 @@ A way for business owners can manage department, roles, and employees for organi
 ## Video
 Please see link for walkthrough tutorial: https://drive.google.com/file/d/1EuOeMH2R_zNAUGBZJhv9F-Ht1tWmjvGK/view?usp=sharing
 
-## Technlogies
+## Technologies
 * Inquirer
 * SQL
 * MySQL
