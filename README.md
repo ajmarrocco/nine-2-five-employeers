@@ -13,7 +13,7 @@ A way for business owners can manage department, roles, and employees for organi
 * [Questions](#questions)
 
 ## Video
-Please see link for walkthrough tutorial:
+Please see link for walkthrough tutorial: https://drive.google.com/file/d/1EuOeMH2R_zNAUGBZJhv9F-Ht1tWmjvGK/view?usp=sharing
 
 ## Technlogies
 * Inquirer
@@ -27,7 +27,15 @@ Please see link for walkthrough tutorial:
 npm install inquirer mysql2 console.table --save
 
 ## Usage
-Install dependencies before executing code
+Before using please install dependencies and be sure you are in the nine-2-five-tracking folder.
+
+Then run the following commands:
+* mysql -u root -p
+    * Password is R$c0y?(9f!%0)fnKSJr1
+* source db/db.sql
+* source db/schema.sql
+* source db/seeds.sql
+
 
 ## Contributing
 Pull requests will be review
