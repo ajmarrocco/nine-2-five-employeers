@@ -300,6 +300,8 @@ function questions(){
                                 }
                                 // Tells user that new role name is in the database 
                                 console.log(`Added ${params[0]} ${params[1]} to the database.`)
+                                // Push new employee to employee array
+                                employeeArr.push(`${params[0]} ${params[1]}`);
                                 // Calls questions method
                                 questions();
                             });
@@ -336,7 +338,7 @@ function questions(){
                                     console.log(err);
                                 }
                                 // Tells user that updated employee role
-                                console.log("Updated Employees role")
+                                console.log("Updated employee's role")
                                 // Calls questions method
                                 questions();
                             });
